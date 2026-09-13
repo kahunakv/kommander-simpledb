@@ -1,6 +1,6 @@
 # Kommander SimpleDB
 
-A small replicated string key/value database built with .NET 10, Kommander 0.17.1, gRPC, and SQLite.
+A small replicated string key/value database built with .NET 10, Kommander 1.6.5, gRPC, and SQLite.
 
 Each key is mapped by Kommander to one of eight Raft partitions. Every partition elects its own leader, so different keys may have different leaders. A node that receives a REST request for a partition it does not lead responds with `307 Temporary Redirect` to that leader's REST endpoint. The 307 status preserves the method and body of PUT requests.
 
