@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="src/SimpleDb/SimpleDb.csproj" />
+  <Project Path="src/SimpleDb.ServiceDefaults/SimpleDb.ServiceDefaults.csproj" />
+  <Project Path="src/SimpleDb.AppHost/SimpleDb.AppHost.csproj" />
 </Solution>

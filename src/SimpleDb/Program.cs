@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using SimpleDb;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.AddServiceDefaults();
+// Kestrel waits for the open Raft gRPC streams of the peers on shutdown. Do not wait the default 30 s.
+builder.Services.Configure<HostOptions>(host => host.ShutdownTimeout = TimeSpan.FromSeconds(5));
 builder.Logging.AddFilter("Microsoft.AspNetCore.Hosting.Diagnostics", LogLevel.Warning);
 builder.Logging.AddFilter("Microsoft.AspNetCore.Routing.EndpointMiddleware", LogLevel.Warning);
 builder.Logging.AddFilter("Microsoft.AspNetCore.Http.Result", LogLevel.Warning);
@@ -63,8 +66,13 @@ builder.Services.AddKommanderGrpc();
 
 WebApplication app = builder.Build();
 app.MapGrpcRaftRoutes();
+app.MapDefaultEndpoints();
 
-app.MapGet("/health", (IRaft raft) => Results.Ok(new { ready = raft.IsInitialized, node = options.NodeId }));
+// 503 until the node has initialized its partitions, so that the Aspire health check (and any load
+// balancer) only sends traffic to a node that can serve it.
+app.MapGet("/health", (IRaft raft) => Results.Json(
+    new { ready = raft.IsInitialized, node = options.NodeId },
+    statusCode: raft.IsInitialized ? StatusCodes.Status200OK : StatusCodes.Status503ServiceUnavailable));
 
 app.MapPut("/keys/{key}", async (string key, PutCommand body, IRaft raft, KeyValueStore store, CancellationToken cancellationToken) =>
 {

@@ -1,0 +1,16 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.6.4">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- The dashboard and the orchestrator come from NuGet packages, so the AppHost runs with plain
+         `dotnet run` and needs no Aspire CLI. ASPIRE010 only reports that choice. -->
+    <AspireUseCliBundle>false</AspireUseCliBundle>
+    <NoWarn>$(NoWarn);ASPIRE010</NoWarn>
+    <UserSecretsId>b41c469e-943f-44b6-b3dd-c3bd41dbcc13</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SimpleDb\SimpleDb.csproj" />
+  </ItemGroup>
+
+</Project>
